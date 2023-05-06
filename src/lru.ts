@@ -25,7 +25,8 @@ export interface LRUCollection<K, V> extends LRUCache<K, V> {
 }
 
 /**
- * Only some of the methods are able to
+ * @internal
+ * Only some of the methods are fully implementable 1:1 with discord.js collections, so we omit the rest.
  */
 type ImplementableCollection<K extends NonNullable<unknown>, V extends NonNullable<unknown>> = Omit<
     OmitConstructor<Collection<K, V>>,
@@ -69,7 +70,7 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * collection.ensure(guildId, () => defaultGuildConfig);
      * ```
      */
-    public ensure(key: K, defaultValueGenerator: (key: K, collection: this) => V): V {
+    public ensure(key: K, defaultValueGenerator: (key: K, lru: this) => V): V {
         if (this.has(key)) return this.get(key)!;
         if (typeof defaultValueGenerator !== 'function')
             throw new TypeError(`${defaultValueGenerator} is not a function`);
@@ -252,20 +253,18 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * collection.find(user => user.username === 'Bob');
      * ```
      */
-    public find<V2 extends V>(
-        fn: (value: V, key: K, collection: this) => value is V2
-    ): V2 | undefined;
-    public find(fn: (value: V, key: K, collection: this) => unknown): V | undefined;
+    public find<V2 extends V>(fn: (value: V, key: K, lru: this) => value is V2): V2 | undefined;
+    public find(fn: (value: V, key: K, lru: this) => unknown): V | undefined;
     public find<This, V2 extends V>(
-        fn: (this: This, value: V, key: K, collection: this) => value is V2,
+        fn: (this: This, value: V, key: K, lru: this) => value is V2,
         thisArgument: This
     ): V2 | undefined;
     public find<This>(
-        fn: (this: This, value: V, key: K, collection: this) => unknown,
+        fn: (this: This, value: V, key: K, lru: this) => unknown,
         thisArgument: This
     ): V | undefined;
     public find(
-        fn: (value: V, key: K, collection: this) => unknown,
+        fn: (value: V, key: K, lru: this) => unknown,
         thisArgument?: unknown
     ): V | undefined {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
@@ -289,20 +288,18 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * collection.findKey(user => user.username === 'Bob');
      * ```
      */
-    public findKey<K2 extends K>(
-        fn: (value: V, key: K, collection: this) => key is K2
-    ): K2 | undefined;
-    public findKey(fn: (value: V, key: K, collection: this) => unknown): K | undefined;
+    public findKey<K2 extends K>(fn: (value: V, key: K, lru: this) => key is K2): K2 | undefined;
+    public findKey(fn: (value: V, key: K, lru: this) => unknown): K | undefined;
     public findKey<This, K2 extends K>(
-        fn: (this: This, value: V, key: K, collection: this) => key is K2,
+        fn: (this: This, value: V, key: K, lru: this) => key is K2,
         thisArgument: This
     ): K2 | undefined;
     public findKey<This>(
-        fn: (this: This, value: V, key: K, collection: this) => unknown,
+        fn: (this: This, value: V, key: K, lru: this) => unknown,
         thisArgument: This
     ): K | undefined;
     public findKey(
-        fn: (value: V, key: K, collection: this) => unknown,
+        fn: (value: V, key: K, lru: this) => unknown,
         thisArgument?: unknown
     ): K | undefined {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
@@ -321,15 +318,9 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * @param thisArg - Value to use as `this` when executing function
      * @returns The number of removed entries
      */
-    public sweep(fn: (value: V, key: K, collection: this) => unknown): number;
-    public sweep<T>(
-        fn: (this: T, value: V, key: K, collection: this) => unknown,
-        thisArgument: T
-    ): number;
-    public sweep(
-        fn: (value: V, key: K, collection: this) => unknown,
-        thisArgument?: unknown
-    ): number {
+    public sweep(fn: (value: V, key: K, lru: this) => unknown): number;
+    public sweep<T>(fn: (this: T, value: V, key: K, lru: this) => unknown, thisArgument: T): number;
+    public sweep(fn: (value: V, key: K, lru: this) => unknown, thisArgument?: unknown): number {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
         if (thisArgument !== undefined) fn = fn.bind(thisArgument);
         const previousSize = this.size;
@@ -352,27 +343,25 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * collection.filter(user => user.username === 'Bob');
      * ```
      */
-    public filter<K2 extends K>(
-        fn: (value: V, key: K, collection: this) => key is K2
-    ): Collection<K2, V>;
+    public filter<K2 extends K>(fn: (value: V, key: K, lru: this) => key is K2): Collection<K2, V>;
     public filter<V2 extends V>(
-        fn: (value: V, key: K, collection: this) => value is V2
+        fn: (value: V, key: K, lru: this) => value is V2
     ): Collection<K, V2>;
-    public filter(fn: (value: V, key: K, collection: this) => unknown): Collection<K, V>;
+    public filter(fn: (value: V, key: K, lru: this) => unknown): Collection<K, V>;
     public filter<This, K2 extends K>(
-        fn: (this: This, value: V, key: K, collection: this) => key is K2,
+        fn: (this: This, value: V, key: K, lru: this) => key is K2,
         thisArgument: This
     ): Collection<K2, V>;
     public filter<This, V2 extends V>(
-        fn: (this: This, value: V, key: K, collection: this) => value is V2,
+        fn: (this: This, value: V, key: K, lru: this) => value is V2,
         thisArgument: This
     ): Collection<K, V2>;
     public filter<This>(
-        fn: (this: This, value: V, key: K, collection: this) => unknown,
+        fn: (this: This, value: V, key: K, lru: this) => unknown,
         thisArgument: This
     ): Collection<K, V>;
     public filter(
-        fn: (value: V, key: K, collection: this) => unknown,
+        fn: (value: V, key: K, lru: this) => unknown,
         thisArgument?: unknown
     ): Collection<K, V> {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
@@ -397,28 +386,28 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * ```
      */
     public partition<K2 extends K>(
-        fn: (value: V, key: K, collection: this) => key is K2
+        fn: (value: V, key: K, lru: this) => key is K2
     ): [Collection<K2, V>, Collection<Exclude<K, K2>, V>];
     public partition<V2 extends V>(
-        fn: (value: V, key: K, collection: this) => value is V2
+        fn: (value: V, key: K, lru: this) => value is V2
     ): [Collection<K, V2>, Collection<K, Exclude<V, V2>>];
     public partition(
-        fn: (value: V, key: K, collection: this) => unknown
+        fn: (value: V, key: K, lru: this) => unknown
     ): [Collection<K, V>, Collection<K, V>];
     public partition<This, K2 extends K>(
-        fn: (this: This, value: V, key: K, collection: this) => key is K2,
+        fn: (this: This, value: V, key: K, lru: this) => key is K2,
         thisArgument: This
     ): [Collection<K2, V>, Collection<Exclude<K, K2>, V>];
     public partition<This, V2 extends V>(
-        fn: (this: This, value: V, key: K, collection: this) => value is V2,
+        fn: (this: This, value: V, key: K, lru: this) => value is V2,
         thisArgument: This
     ): [Collection<K, V2>, Collection<K, Exclude<V, V2>>];
     public partition<This>(
-        fn: (this: This, value: V, key: K, collection: this) => unknown,
+        fn: (this: This, value: V, key: K, lru: this) => unknown,
         thisArgument: This
     ): [Collection<K, V>, Collection<K, V>];
     public partition(
-        fn: (value: V, key: K, collection: this) => unknown,
+        fn: (value: V, key: K, lru: this) => unknown,
         thisArgument?: unknown
     ): [Collection<K, V>, Collection<K, V>] {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
@@ -449,15 +438,13 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * collection.flatMap(guild => guild.members.cache);
      * ```
      */
-    public flatMap<T>(
-        fn: (value: V, key: K, collection: this) => Collection<K, T>
-    ): Collection<K, T>;
+    public flatMap<T>(fn: (value: V, key: K, lru: this) => Collection<K, T>): Collection<K, T>;
     public flatMap<T, This>(
-        fn: (this: This, value: V, key: K, collection: this) => Collection<K, T>,
+        fn: (this: This, value: V, key: K, lru: this) => Collection<K, T>,
         thisArgument: This
     ): Collection<K, T>;
     public flatMap<T>(
-        fn: (value: V, key: K, collection: this) => Collection<K, T>,
+        fn: (value: V, key: K, lru: this) => Collection<K, T>,
         thisArgument?: unknown
     ): Collection<K, T> {
         // eslint-disable-next-line unicorn/no-array-method-this-argument
@@ -477,12 +464,12 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * collection.map(user => user.tag);
      * ```
      */
-    public map<T>(fn: (value: V, key: K, collection: this) => T): T[];
+    public map<T>(fn: (value: V, key: K, lru: this) => T): T[];
     public map<This, T>(
-        fn: (this: This, value: V, key: K, collection: this) => T,
+        fn: (this: This, value: V, key: K, lru: this) => T,
         thisArgument: This
     ): T[];
-    public map<T>(fn: (value: V, key: K, collection: this) => T, thisArgument?: unknown): T[] {
+    public map<T>(fn: (value: V, key: K, lru: this) => T, thisArgument?: unknown): T[] {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
         if (thisArgument !== undefined) fn = fn.bind(thisArgument);
         const iter = this.entries();
@@ -504,13 +491,13 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * collection.mapValues(user => user.tag);
      * ```
      */
-    public mapValues<T>(fn: (value: V, key: K, collection: this) => T): Collection<K, T>;
+    public mapValues<T>(fn: (value: V, key: K, lru: this) => T): Collection<K, T>;
     public mapValues<This, T>(
-        fn: (this: This, value: V, key: K, collection: this) => T,
+        fn: (this: This, value: V, key: K, lru: this) => T,
         thisArgument: This
     ): Collection<K, T>;
     public mapValues<T>(
-        fn: (value: V, key: K, collection: this) => T,
+        fn: (value: V, key: K, lru: this) => T,
         thisArgument?: unknown
     ): Collection<K, T> {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
@@ -531,15 +518,9 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * collection.some(user => user.discriminator === '0000');
      * ```
      */
-    public some(fn: (value: V, key: K, collection: this) => unknown): boolean;
-    public some<T>(
-        fn: (this: T, value: V, key: K, collection: this) => unknown,
-        thisArgument: T
-    ): boolean;
-    public some(
-        fn: (value: V, key: K, collection: this) => unknown,
-        thisArgument?: unknown
-    ): boolean {
+    public some(fn: (value: V, key: K, lru: this) => unknown): boolean;
+    public some<T>(fn: (this: T, value: V, key: K, lru: this) => unknown, thisArgument: T): boolean;
+    public some(fn: (value: V, key: K, lru: this) => unknown, thisArgument?: unknown): boolean {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
         if (thisArgument !== undefined) fn = fn.bind(thisArgument);
         for (const [key, value] of this) {
@@ -561,28 +542,25 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * ```
      */
     public every<K2 extends K>(
-        fn: (value: V, key: K, collection: this) => key is K2
+        fn: (value: V, key: K, lru: this) => key is K2
     ): this is Collection<K2, V>;
     public every<V2 extends V>(
-        fn: (value: V, key: K, collection: this) => value is V2
+        fn: (value: V, key: K, lru: this) => value is V2
     ): this is Collection<K, V2>;
-    public every(fn: (value: V, key: K, collection: this) => unknown): boolean;
+    public every(fn: (value: V, key: K, lru: this) => unknown): boolean;
     public every<This, K2 extends K>(
-        fn: (this: This, value: V, key: K, collection: this) => key is K2,
+        fn: (this: This, value: V, key: K, lru: this) => key is K2,
         thisArgument: This
     ): this is Collection<K2, V>;
     public every<This, V2 extends V>(
-        fn: (this: This, value: V, key: K, collection: this) => value is V2,
+        fn: (this: This, value: V, key: K, lru: this) => value is V2,
         thisArgument: This
     ): this is Collection<K, V2>;
     public every<This>(
-        fn: (this: This, value: V, key: K, collection: this) => unknown,
+        fn: (this: This, value: V, key: K, lru: this) => unknown,
         thisArgument: This
     ): boolean;
-    public every(
-        fn: (value: V, key: K, collection: this) => unknown,
-        thisArgument?: unknown
-    ): boolean {
+    public every(fn: (value: V, key: K, lru: this) => unknown, thisArgument?: unknown): boolean {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
         if (thisArgument !== undefined) fn = fn.bind(thisArgument);
         for (const [key, value] of this) {
@@ -604,10 +582,7 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      * collection.reduce((acc, guild) => acc + guild.memberCount, 0);
      * ```
      */
-    public reduce<T>(
-        fn: (accumulator: T, value: V, key: K, collection: this) => T,
-        initialValue?: T
-    ): T {
+    public reduce<T>(fn: (accumulator: T, value: V, key: K, lru: this) => T, initialValue?: T): T {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
         let accumulator!: T;
 
@@ -651,12 +626,9 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      *  .each(user => console.log(user.username));
      * ```
      */
-    public each(fn: (value: V, key: K, collection: this) => void): this;
-    public each<T>(
-        fn: (this: T, value: V, key: K, collection: this) => void,
-        thisArgument: T
-    ): this;
-    public each(fn: (value: V, key: K, collection: this) => void, thisArgument?: unknown): this {
+    public each(fn: (value: V, key: K, lru: this) => void): this;
+    public each<T>(fn: (this: T, value: V, key: K, lru: this) => void, thisArgument: T): this;
+    public each(fn: (value: V, key: K, lru: this) => void, thisArgument?: unknown): this {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
         if (thisArgument !== undefined) fn = fn.bind(thisArgument);
 
@@ -680,9 +652,9 @@ export class LRUCollection<K extends NonNullable<unknown>, V extends NonNullable
      *  .tap(coll => console.log(coll.size))
      * ```
      */
-    public tap(fn: (collection: this) => void): this;
-    public tap<T>(fn: (this: T, collection: this) => void, thisArgument: T): this;
-    public tap(fn: (collection: this) => void, thisArgument?: unknown): this {
+    public tap(fn: (lru: this) => void): this;
+    public tap<T>(fn: (this: T, lru: this) => void, thisArgument: T): this;
+    public tap(fn: (lru: this) => void, thisArgument?: unknown): this {
         if (typeof fn !== 'function') throw new TypeError(`${fn} is not a function`);
         if (thisArgument !== undefined) fn = fn.bind(thisArgument);
         fn(this);
