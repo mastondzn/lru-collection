@@ -16,5 +16,11 @@ module.exports = defineConfig({
     ],
     rules: {
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/no-unsafe-declaration-merging': 'off',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/restrict-template-expressions': 'off',
+
+        'unicorn/prevent-abbreviations': ['warn', { allowList: { ['fn']: true } }],
     },
 });
