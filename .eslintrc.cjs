@@ -2,7 +2,7 @@ const { defineConfig } = require('eslint-define-config');
 
 module.exports = defineConfig({
     root: true,
-    ignorePatterns: ['node_modules/', 'dist/', '.eslintrc.cjs'],
+    ignorePatterns: ['node_modules/', 'dist/', '.eslintrc.cjs', 'jest.config.js'],
     parserOptions: { project: true },
     parser: '@typescript-eslint/parser',
     plugins: ['@typescript-eslint', 'unicorn'],
