@@ -4,7 +4,7 @@ A tiny and simple LRU (least recently used) implementation with more utility met
 
 ## Documentation
 
-Some generated documentation can be found [here](https://mastondzn.github.io/lru-collection/classes/LRUCollection.html), most of which is the same as the [documentation for the Collection class from discord.js](https://discord.js.org/docs/packages/collection/main) documentation for the Collection class from discord.js.
+Some generated documentation can be found [here](https://mastondzn.github.io/lru-collection/classes/LRUCollection.html) (tick the external checkbox in the settings on the right for all the methods), most of which is the same as the [documentation for the Collection class from discord.js](https://discord.js.org/docs/packages/collection/main) documentation for the Collection class from discord.js.
 
 ## Installation
 
