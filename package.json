@@ -34,7 +34,7 @@
         "build": "tsup",
         "docs": "typedoc src/index.ts --out docs --excludePrivate --excludeProtected",
         "lint": "eslint .",
-        "typecheck": "tsc . --noEmit",
+        "typecheck": "tsc --noEmit",
         "preinstall": "npx only-allow pnpm"
     },
     "devDependencies": {
