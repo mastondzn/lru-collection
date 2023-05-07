@@ -46,7 +46,7 @@ jobs:
                   token: ${{ secrets.NPM_TOKEN }}
 
             - name: Build docs
-              run: pnpm docs
+              run: pnpm run docs
 
             - name: Deploy docs to GitHub Pages
               uses: JamesIves/github-pages-deploy-action@v4.4.1
