@@ -21,13 +21,13 @@
     "types": "dist/index.d.ts",
     "module": "dist/index.mjs",
     "exports": {
-        ".": {
-            "import": "./dist/index.mjs",
-            "require": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-        },
-        "./package.json": "./package.json"
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
     },
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "test": "jest",
         "test:watch": "jest --watch",

@@ -41,9 +41,9 @@ jobs:
               run: pnpm build
 
             - name: Publish to npm
-              run: npm publish --access public --no-git-checks
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              uses: JS-DevTools/npm-publish@v2
+              with:
+                  token: ${{ secrets.NPM_TOKEN }}
 
             - name: Deploy docs to GitHub Pages
               uses: JamesIves/github-pages-deploy-action@v4.4.1
