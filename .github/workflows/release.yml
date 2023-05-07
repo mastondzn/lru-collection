@@ -1,20 +1,12 @@
-name: Test
+name: release
 
 on:
-    pull_request:
-        branches: ['*']
-    push:
-        branches: ['*']
-    merge_group:
-    workflow_dispatch:
+    release:
+        types: [created]
 
 jobs:
-    test:
+    publish:
         runs-on: ubuntu-latest
-
-        strategy:
-            matrix:
-                version: [20, 18, 16]
 
         steps:
             - name: Checkout repo
@@ -23,10 +15,10 @@ jobs:
             - name: Setup pnpm
               uses: pnpm/action-setup@v2.2.4
 
-            - name: Setup Node
+            - name: Setup Node 18
               uses: actions/setup-node@v3
               with:
-                  node-version: ${{ matrix.version }}
+                  node-version: 18
 
             - name: Get pnpm store directory
               id: pnpm-cache
@@ -44,14 +36,17 @@ jobs:
             - name: Install deps (with cache)
               run: pnpm install
 
-            - name: Typecheck
-              run: pnpm run typecheck
-
-            - name: Test
-              run: pnpm run test
-
-            - name: Lint
-              run: pnpm run lint
-
             - name: Build
-              run: pnpm run build
+              run: pnpm build
+
+            - name: Publish to npm
+              run: pnpm publish --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Deploy docs to GitHub Pages
+              uses: JamesIves/github-pages-deploy-action@v4.4.1
+              with:
+                  branch: gh-pages
+                  folder: docs
+                  clean: true
