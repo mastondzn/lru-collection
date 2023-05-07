@@ -34,7 +34,8 @@
         "build": "tsup",
         "docs": "typedoc src/index.ts --out docs --excludePrivate --excludeProtected",
         "lint": "eslint .",
-        "typecheck": "tsc . --noEmit"
+        "typecheck": "tsc . --noEmit",
+        "preinstall": "npx only-allow pnpm"
     },
     "devDependencies": {
         "@types/jest": "^29.5.1",
@@ -46,12 +47,14 @@
         "eslint-define-config": "^1.20.0",
         "eslint-plugin-unicorn": "^47.0.0",
         "jest": "^29.5.0",
+        "only-allow": "^1.1.1",
         "prettier": "^2.8.8",
         "ts-jest": "^29.1.0",
         "tsup": "^6.7.0",
         "typedoc": "^0.24.6",
         "typescript": "^5.0.4"
     },
+    "packageManager": "pnpm@8.4.0",
     "dependencies": {
         "@discordjs/collection": "^1.5.1"
     }
