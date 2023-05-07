@@ -2,6 +2,10 @@
 
 A tiny and simple LRU (least recently used) implementation with more utility methods! It extends a Collection, the data structure that is used throughout [Discord.js](https://github.com/discordjs/discord.js/blob/main/packages/collection/README.md)
 
+## Documentation
+
+Some generated documentation can be found [here](https://mastondzn.github.io/lru-collection/classes/LRUCollection.html), most of which is the same as the [documentation for the Collection class from discord.js](https://discord.js.org/docs/packages/collection/main) documentation for the Collection class from discord.js.
+
 ## Installation
 
 ```sh
